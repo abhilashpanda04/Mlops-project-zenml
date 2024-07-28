@@ -5,7 +5,10 @@ __pycache__/
 
 # C extensions
 *.so
+steps/__pycache__/
+pipeline/__pycache__/
 ignore/
+.zen/
 # Distribution / packaging
 .Python
 build/
