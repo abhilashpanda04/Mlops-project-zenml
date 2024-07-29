@@ -1,0 +1,3 @@
+parameters:
+  data_path: "data/olist_customers_dataset.csv"
+  name: "LinearRegression"
