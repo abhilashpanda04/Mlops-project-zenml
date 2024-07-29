@@ -5,8 +5,8 @@ from steps.train_model import train_model
 from steps.evaluation import evaluate_model
 
 @pipeline
-def train_pipeline(data_path:str) -> None:
+def train_pipeline(data_path:str,name:str) -> None:
     df=ingest_data(data_path)
-    df=clean_data(df)
-    train_model(df)
-    evaluate_model(df)
+    x_train,x_test,y_train,y_test=clean_data(df)
+    model=train_model(x_train,x_test,y_train,y_test,name)
+    r2_score,rmse=evaluate_model(model,x_test,y_test)
