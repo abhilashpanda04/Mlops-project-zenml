@@ -57,7 +57,7 @@ class R2(Evaluation):
             logging.info("calculating R2 score")
             r2=r2_score(y_true, y_pred)
             logging.info(f"R2 score is :{r2}")
-
+            return r2
         except Exception as e:
             logging.error(f"error in calculating R2 score {e}")
             raise e
@@ -77,6 +77,7 @@ class RMSE(Evaluation):
             logging.info("calculating RMSE score")
             rmse=mean_squared_error(y_true, y_pred,squared=False)
             logging.info(f"RMSE score is :{rmse}")
+            return rmse
 
         except Exception as e:
             logging.error(f"error in calculating RMSE score {e}")
