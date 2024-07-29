@@ -1,5 +1,11 @@
-from zenml.steps import BaseParameters
+from pydantic import BaseModel
+from typing import Optional
 
-class ModelNameConfig(BaseParameters):
+class ModelNameConfig(BaseModel):
     """Model configuration"""
-    model_name="LinearRegression"
+    model_name:Optional[str]="LinearRegression"
+
+model_config = {
+"protected_namespaces": (),
+"model_name": ModelNameConfig
+}
