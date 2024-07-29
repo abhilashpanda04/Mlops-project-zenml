@@ -1,16 +1,16 @@
-from pandera.typing import DataFrame
+# from pandera.typing import DataFrame
+import pandas as pd
 import logging
 from zenml import step
-from src.model_development import Linearregression
+from src.model_development import LinearRegressionModel
 from sklearn.base import RegressorMixin
-from .config import ModelNameConfig
 @step
 def train_model(
-    x_train:DataFrame,
-    x_test:DataFrame,
-    y_train:DataFrame,
-    y_test:DataFrame,
-    config:ModelNameConfig,
+    x_train:pd.DataFrame,
+    x_test:pd.DataFrame,
+    y_train:pd.DataFrame,
+    y_test:pd.DataFrame,
+    name,
     )->RegressorMixin:
     """
     Trains the model on ingested data
@@ -22,8 +22,8 @@ def train_model(
     """
     try:
         model=None
-        if config.model_name == "Linearregression":
-            model=Linearregression()
+        if name == "LinearRegression":
+            model=LinearRegressionModel()
             trained_model=model.train(x_train,y_train)
             return trained_model
         else:
