@@ -1,16 +1,17 @@
 import logging
-from pandera.typing import DataFrame,Series
+# from pandera.typing import DataFrame,Series
+import pandas as pd
 from zenml import step
 from src.data_cleaning import DataCleaning,DataDevideStretegy,DataPreProcessingStrategy
 from typing_extensions import Annotated
 from typing import Tuple
 
 @step
-def clean_data(df:DataFrame)->Tuple[
-    Annotated[DataFrame, "x_train"],
-    Annotated[DataFrame, "x_test"],
-    Annotated[Series, "y_train"],
-    Annotated[Series, "y_test"],
+def clean_data(df:pd.DataFrame)->Tuple[
+    Annotated[pd.DataFrame, "x_train"],
+    Annotated[pd.DataFrame, "x_test"],
+    Annotated[pd.Series, "y_train"],
+    Annotated[pd.Series, "y_test"],
     ]:
     """
     cleans the data and devides it into train and test

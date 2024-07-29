@@ -1,6 +1,6 @@
 import logging
 from zenml import step
-from pandera.typing import DataFrame
+# from pandera.typing import DataFrame
 import pandas as pd
 
 class IngestData:
@@ -10,7 +10,7 @@ class IngestData:
     def __init__(self,data_path:str) -> None:
         self.data_path = data_path
 
-    def get_data(self):
+    def get_data(self)->pd.DataFrame:
         """
         Ingesting data from data_path
         """
@@ -19,7 +19,7 @@ class IngestData:
 
 
 @step
-def ingest_data(data_path:str) -> DataFrame:
+def ingest_data(data_path:str) -> pd.DataFrame:
     """
     ingesting data from datapath
 

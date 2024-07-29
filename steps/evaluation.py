@@ -4,12 +4,13 @@ from sklearn.base import RegressorMixin
 from src.evaluation import MSE,R2,RMSE
 from typing_extensions import Annotated
 from typing import Tuple
-from pandera.typing import DataFrame
+# from pandera.typing import DataFrame
+import pandas as pd
 
 @step
 def evaluate_model(model:RegressorMixin,
-                   x_test:DataFrame,
-                   y_test:DataFrame)->Tuple[Annotated[float,"r2_score"],
+                   x_test:pd.DataFrame,
+                   y_test:pd.DataFrame)->Tuple[Annotated[float,"r2_score"],
                                                Annotated[float,"rmse"]]:
     """
     Evaluates Model on ingested data
