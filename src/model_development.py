@@ -18,7 +18,7 @@ class Model(ABC):
             None
         """
         
-class Linearregression(Model):
+class LinearRegressionModel(Model):
     """
     Linear Regression model
     """
