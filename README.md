@@ -36,7 +36,6 @@ Install dependencies:
 
 ```bash
 pip install -r requirements.txt
-Use code with caution.
 ```
 Configure ZenML:
 
@@ -45,6 +44,5 @@ Run the pipeline:
 
 ```bash
 python run_pipeline.py
-Use code with caution.
 ```
 
