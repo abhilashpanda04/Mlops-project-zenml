@@ -4,7 +4,7 @@ import pandas as pd
 from typing import Tuple
 from typing_extensions import Annotated
 from zenml import step, ArtifactConfig, add_tags
-from sklearn.base import RegressorMixin
+from sklearn.pipeline import Pipeline
 
 from src.evaluation import MSE, R2, RMSE
 from tag_registry import ArtifactType, Performance
@@ -12,7 +12,7 @@ from tag_registry import ArtifactType, Performance
 
 @step
 def evaluate_model(
-    model: RegressorMixin,
+    model: Pipeline,
     x_test: pd.DataFrame,
     y_test: pd.DataFrame,
 ) -> Tuple[
@@ -58,18 +58,18 @@ def evaluate_model(
         rmse_calculator = RMSE()
         rmse_score = rmse_calculator.calculate_score(y_test, y_pred)
 
-        # Dynamically tag the trained model based on performance
+        # Dynamically tag the metrics based on performance
         if r2_score >= 0.7:
-            add_tags(tags=[Performance.HIGH_R2.value], artifact_name="trained_model", infer_artifact=True)
+            add_tags(tags=[Performance.HIGH_R2.value], artifact_name="r2_score", infer_artifact=True)
             logging.info(f"Model tagged as HIGH_R2 (R2={r2_score:.4f})")
         else:
-            add_tags(tags=[Performance.LOW_R2.value], artifact_name="trained_model", infer_artifact=True)
+            add_tags(tags=[Performance.LOW_R2.value], artifact_name="r2_score", infer_artifact=True)
             logging.info(f"Model tagged as LOW_R2 (R2={r2_score:.4f})")
 
         if rmse_score <= 1.0:
-            add_tags(tags=[Performance.LOW_RMSE.value], artifact_name="trained_model", infer_artifact=True)
+            add_tags(tags=[Performance.LOW_RMSE.value], artifact_name="rmse", infer_artifact=True)
         else:
-            add_tags(tags=[Performance.HIGH_RMSE.value], artifact_name="trained_model", infer_artifact=True)
+            add_tags(tags=[Performance.HIGH_RMSE.value], artifact_name="rmse", infer_artifact=True)
 
         logging.info(f"Evaluation complete — R2: {r2_score:.4f} | RMSE: {rmse_score:.4f} | MSE: {mse_score:.4f}")
         return r2_score, rmse_score

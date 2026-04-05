@@ -41,16 +41,19 @@ class DataPreProcessingStrategy(DataStrategy):
                 axis=1
             )
 
-            data["product_weight_g"].fillna(data["product_weight_g"].median(),inplace=True)
-            data["product_length_cm"].fillna(data["product_length_cm"].median(),inplace=True)
-            data["product_height_cm"].fillna(data["product_height_cm"].median(),inplace=True)
-            data["product_width_cm"].fillna(data["product_width_cm"].median(),inplace=True)
-            data["review_comment_message"].fillna("No review",inplace=True)
+            data["product_weight_g"] = data["product_weight_g"].fillna(data["product_weight_g"].median())
+            data["product_length_cm"] = data["product_length_cm"].fillna(data["product_length_cm"].median())
+            data["product_height_cm"] = data["product_height_cm"].fillna(data["product_height_cm"].median())
+            data["product_width_cm"] = data["product_width_cm"].fillna(data["product_width_cm"].median())
+            data["review_comment_message"] = data.get("review_comment_message", pd.Series(dtype=str)).fillna("No review")
             
-            data=data.select_dtypes(include=[np.number])
+            data = data.select_dtypes(include=[np.number])
 
             cols_to_drop=["customer_zip_code_prefix","order_item_id"]
-            data=data.drop(cols_to_drop,axis=1)
+            data=data.drop(columns=[c for c in cols_to_drop if c in data.columns])
+            data = data.dropna(axis=1, how='all')
+            data = data.fillna(data.median())
+            data = data.fillna(0) # fallback for any remaining NaNs
             return data
         
         except Exception as e:
@@ -64,6 +67,9 @@ class DataDevideStretegy(DataStrategy):
     """
     def handle_data(self, data: pd.DataFrame)->Union[pd.DataFrame,pd.Series]:
         try:
+            # Drop rows where target variable is NaN
+            data = data.dropna(subset=["review_score"])
+            
             x=data.drop(["review_score"],axis=1)
             y=data["review_score"]
             x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=42)

@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 from typing_extensions import Annotated
 from zenml import step, ArtifactConfig
-from sklearn.base import RegressorMixin
+from sklearn.pipeline import Pipeline
 
 from src.model_development import LinearRegressionModel
 from tag_registry import ArtifactType, ModelAlgorithm
@@ -17,7 +17,7 @@ def train_model(
     y_test: pd.DataFrame,
     name: str,
 ) -> Annotated[
-    RegressorMixin,
+    Pipeline,
     ArtifactConfig(
         name="trained_model",
         tags=[

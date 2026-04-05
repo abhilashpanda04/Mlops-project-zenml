@@ -69,9 +69,11 @@ def clean_data(
 
         # Dynamically tag based on data quality
         if missing_pct == 0:
-            add_tags(tags=[DataQuality.COMPLETE.value], artifact_name="raw_customer_data", infer_artifact=True)
+            add_tags(tags=[DataQuality.COMPLETE.value], artifact_name="x_train", infer_artifact=True)
+            add_tags(tags=[DataQuality.COMPLETE.value], artifact_name="x_test", infer_artifact=True)
         else:
-            add_tags(tags=[DataQuality.INCOMPLETE.value], artifact_name="raw_customer_data", infer_artifact=True)
+            add_tags(tags=[DataQuality.INCOMPLETE.value], artifact_name="x_train", infer_artifact=True)
+            add_tags(tags=[DataQuality.INCOMPLETE.value], artifact_name="x_test", infer_artifact=True)
 
         # Train-test split
         devide_strategy = DataDevideStretegy()

@@ -1,6 +1,8 @@
 import logging
 from abc import ABC,abstractmethod
 from sklearn.linear_model import LinearRegression
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
 import pandas as pd
 class Model(ABC):
     """
@@ -33,7 +35,10 @@ class LinearRegressionModel(Model):
             None
         """
         try:
-            reg=LinearRegression(**kwargs)
+            reg = Pipeline([
+                ('imputer', SimpleImputer(strategy='median')),
+                ('model', LinearRegression(**kwargs))
+            ])
             reg.fit(x_train,y_train)
             logging.info("Model training completed")
             return reg
