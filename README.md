@@ -1,4 +1,4 @@
-# 🚀 ZenML Customer Review Predictor: An MLOps Showcase
+# ZenML Customer Review Predictor: An MLOps Showcase
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![ZenML](https://img.shields.io/badge/built%20with-ZenML-blueviolet)](https://zenml.io/)
@@ -14,7 +14,7 @@ It trains a regression model to predict customer review scores using the famous 
 
 ---
 
-## 💡 Why I Built This
+## Why I Built This
 
 As ML projects scale, pipelines often turn into a chaotic mess of untracked Jupyter notebooks. You end up with 50 models, 200 orphaned datasets, and no idea which model version is currently in production. 
 
@@ -27,7 +27,7 @@ To solve this, I implemented the [ZenML Tagging & Organization Framework](https:
 
 ---
 
-## 🏗️ How It Works (The Architecture)
+## How It Works (The Architecture)
 
 I've strictly separated the ML business logic (`src/`) from the pipeline orchestration (`steps/`). 
 
@@ -52,7 +52,7 @@ Mlops-project-zenml/
 └── run_pipeline.py             ← Main entry point
 ```
 
-### 📈 The Pipeline Flow
+### The Pipeline Flow
 
 Here is how data moves through the system, getting tagged at every stage:
 
@@ -69,7 +69,7 @@ ecommerce]      + dynamic:       [algorithm-   [performance-
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 I rely on a modern, lightweight MLOps stack:
 - **Orchestration**: ZenML
@@ -79,7 +79,7 @@ I rely on a modern, lightweight MLOps stack:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Want to run this on your own machine? It takes less than 2 minutes.
 
@@ -128,11 +128,11 @@ zenml up
 
 ---
 
-## 🤝 Contributing & Feedback
+## Contributing & Feedback
 
 If you're interested in MLOps, system design, or have feedback on my implementation of the Strategy pattern, I'd love to connect! Feel free to open an issue, submit a PR, or reach out directly.
 
-## 👤 About Me
+## About Me
 
 **Abhilash Kumar Panda**
 - 📧 Email: abhilashk.isme1517@gmail.com
@@ -141,4 +141,4 @@ If you're interested in MLOps, system design, or have feedback on my implementat
 - GitHub: [@abhilashpanda04](https://github.com/abhilashpanda04)
 
 ---
-⭐ *If you found this architecture helpful or interesting, please consider giving the repo a star!*
+*If you found this architecture helpful or interesting, please consider giving the repo a star!*
