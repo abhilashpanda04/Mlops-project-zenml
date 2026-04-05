@@ -1,0 +1,14 @@
+[project]
+name = "mlops-project-zenml"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.4.4",
+    "pandas>=3.0.2",
+    "pyparsing==2.4.2",
+    "rich>=14.3.3",
+    "scikit-learn>=1.8.0",
+    "zenml[server]>=0.94.1",
+]

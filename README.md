@@ -85,17 +85,18 @@ def train_pipeline():
 
 ## 📦 Installation
 
+This project uses [uv](https://github.com/astral-sh/uv) for lightning-fast dependency management.
+
 ```bash
 # Clone the repository
 git clone https://github.com/abhilashpanda04/Mlops-project-zenml.git
 cd Mlops-project-zenml
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Install dependencies and create a virtual environment with uv
+uv sync
 
-# Install dependencies
-pip install -r requirements.txt
+# Activate the virtual environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Initialize ZenML
 zenml init

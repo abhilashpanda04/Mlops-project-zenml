@@ -1,6 +1,0 @@
-zenml[server]
-pyparsing==2.4.2
-scikit-learn
-pandas
-numpy
-rich
