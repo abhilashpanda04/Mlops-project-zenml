@@ -1,39 +1,86 @@
 import logging
-# from pandera.typing import DataFrame,Series
+
 import pandas as pd
-from zenml import step
-from src.data_cleaning import DataCleaning,DataDevideStretegy,DataPreProcessingStrategy
-from typing_extensions import Annotated
 from typing import Tuple
+from typing_extensions import Annotated
+from zenml import step, ArtifactConfig, add_tags
+
+from src.data_cleaning import DataCleaning, DataDevideStretegy, DataPreProcessingStrategy
+from tag_registry import ArtifactType, Domain, DataQuality
+
 
 @step
-def clean_data(df:pd.DataFrame)->Tuple[
-    Annotated[pd.DataFrame, "x_train"],
-    Annotated[pd.DataFrame, "x_test"],
-    Annotated[pd.Series, "y_train"],
-    Annotated[pd.Series, "y_test"],
-    ]:
+def clean_data(
+    df: pd.DataFrame,
+) -> Tuple[
+    Annotated[
+        pd.DataFrame,
+        ArtifactConfig(
+            name="x_train",
+            tags=[ArtifactType.PROCESSED.value, Domain.ECOMMERCE.value],
+        ),
+    ],
+    Annotated[
+        pd.DataFrame,
+        ArtifactConfig(
+            name="x_test",
+            tags=[ArtifactType.PROCESSED.value, Domain.ECOMMERCE.value],
+        ),
+    ],
+    Annotated[
+        pd.Series,
+        ArtifactConfig(
+            name="y_train",
+            tags=[ArtifactType.PROCESSED.value, Domain.CUSTOMER_REVIEWS.value],
+        ),
+    ],
+    Annotated[
+        pd.Series,
+        ArtifactConfig(
+            name="y_test",
+            tags=[ArtifactType.PROCESSED.value, Domain.CUSTOMER_REVIEWS.value],
+        ),
+    ],
+]:
     """
-    cleans the data and devides it into train and test
+    Cleans the data and divides it into train and test sets.
+
+    Applies preprocessing strategy to handle missing values and
+    feature selection, then splits into training and test sets.
+    Dynamically tags artifacts based on data quality assessment.
+
     Args:
-        df: pd.DataFrame
+        df: Raw input DataFrame
     Returns:
-        x_train: Training Data
-        x_test: Testing Data
-        y_train: Training Labels
-        y_test: Testing Labels
+        x_train: Training feature data
+        x_test: Testing feature data
+        y_train: Training target labels
+        y_test: Testing target labels
     """
     try:
-        preprocess_stretegy=DataPreProcessingStrategy()
-        datacleaning=DataCleaning(df,preprocess_stretegy)
-        processed_data=datacleaning.handle_data()
+        # Assess data quality before cleaning
+        missing_pct = df.isnull().mean().mean() * 100
+        logging.info(f"Missing data percentage: {missing_pct:.2f}%")
 
+        # Preprocessing
+        preprocess_strategy = DataPreProcessingStrategy()
+        data_cleaning = DataCleaning(df, preprocess_strategy)
+        processed_data = data_cleaning.handle_data()
 
-        devide_stretegy=DataDevideStretegy()
-        datacleaning=DataCleaning(processed_data,devide_stretegy)
-        x_train,x_test,y_train,y_test=datacleaning.handle_data()
-        logging.info("Datacleaning completed")
-        return x_train,x_test,y_train,y_test
+        # Dynamically tag based on data quality
+        if missing_pct == 0:
+            add_tags(tags=[DataQuality.COMPLETE.value], artifact_name="raw_customer_data", infer_artifact=True)
+        else:
+            add_tags(tags=[DataQuality.INCOMPLETE.value], artifact_name="raw_customer_data", infer_artifact=True)
+
+        # Train-test split
+        devide_strategy = DataDevideStretegy()
+        data_cleaning = DataCleaning(processed_data, devide_strategy)
+        x_train, x_test, y_train, y_test = data_cleaning.handle_data()
+
+        logging.info(f"Data cleaning completed. Train size: {len(x_train)}, Test size: {len(x_test)}")
+        return x_train, x_test, y_train, y_test
+
     except Exception as e:
         logging.error(f"Error in cleaning data: {e}")
         raise e
