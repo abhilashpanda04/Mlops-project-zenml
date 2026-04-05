@@ -1,250 +1,138 @@
-# Mlops-project-zenml
+# 🚀 ZenML Customer Review Predictor: An MLOps Showcase
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![ZenML](https://img.shields.io/badge/built%20with-ZenML-blueviolet)](https://zenml.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-End-to-end ML pipeline using **ZenML** for orchestration — predicting customer review scores from the Olist e-commerce dataset. Demonstrates ZenML best practices including **tagging, artifact management, Model Control Plane**, and the **Strategy design pattern**.
+> *"An MLOps pipeline is only as good as its organization."*
 
-## 📋 Overview
+Welcome to my end-to-end Machine Learning pipeline project! I built this repository to demonstrate how to implement **production-grade MLOps best practices** using **ZenML** and **Scikit-Learn**. 
 
-This project builds a regression pipeline that predicts `review_score` from order and product features. It showcases ZenML's organization capabilities:
+While many projects focus solely on hyper-tuning a model to get the highest accuracy, this project focuses heavily on **Artifact Management, Metadata Tracking, and Code Maintainability**. 
 
-- 🏷️ **Tag Registry** — Centralized Enum-based tagging for consistency
-- 📦 **Artifact Tagging** — Every artifact (data, model, metrics) is tagged via `ArtifactConfig`
-- 🤖 **Model Control Plane** — `Model` entity tracks the model across pipeline runs
-- 🔄 **Dynamic Tagging** — Performance-based tags applied automatically after evaluation
-- 🔍 **Tag Manager** — Utility to query, filter, and find orphaned resources
-- 🧱 **Strategy Pattern** — Clean OOP design for data cleaning, model training, and evaluation
+It trains a regression model to predict customer review scores using the famous [Olist E-commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce), but the real star of the show is the architecture behind it.
 
-## 🏗️ Architecture
+---
 
-```
-run_pipeline.py                 ← Entry point (runtime tags + YAML config)
-│
-├── pipeline/
-│   └── training_pipeline.py    ← @pipeline with tags + Model entity
-│
-├── steps/                      ← ZenML @step definitions with ArtifactConfig
-│   ├── ingest_data.py          ← Loads raw CSV → tagged "artifact-raw"
-│   ├── clean_data.py           ← Preprocesses + splits → tagged "artifact-processed"
-│   ├── train_model.py          ← Trains model → tagged "artifact-model"
-│   ├── evaluation.py           ← Evaluates + dynamic tags (performance-high-r2, etc.)
-│   └── config.py               ← Pydantic model config
-│
-├── src/                        ← Business logic (Strategy pattern)
-│   ├── data_cleaning.py        ← DataStrategy ABC + preprocessing/splitting strategies
-│   ├── model_development.py    ← Model ABC + LinearRegression strategy
-│   └── evaluation.py           ← Evaluation ABC + MSE/R2/RMSE strategies
-│
-├── tag_registry.py             ← Central tag registry using Python Enums
-├── utils/
-│   └── tag_manager.py          ← Query/filter tagged resources + orphan detection
-│
-├── configuration/
-│   └── config.yaml             ← Pipeline parameters + config-level tags
-│
-└── data/
-    └── olist_customers_dataset.csv
-```
+## 💡 Why I Built This
 
-## 🏷️ Tagging Strategy
+As ML projects scale, pipelines often turn into a chaotic mess of untracked Jupyter notebooks. You end up with 50 models, 200 orphaned datasets, and no idea which model version is currently in production. 
 
-This project implements ZenML's tagging best practices with a centralized registry:
+To solve this, I implemented the [ZenML Tagging & Organization Framework](https://docs.zenml.io/user-guides/best-practices/organizing-pipelines-and-models) from the ground up. If you explore the code, you'll find:
 
-| Category | Tags | Applied To |
-|----------|------|-----------|
-| **Environment** | `environment-development`, `environment-staging`, `environment-production` | Pipelines |
-| **Domain** | `domain-ecommerce`, `domain-customer-reviews` | Pipelines, Artifacts |
-| **Pipeline Type** | `pipeline-training`, `pipeline-inference` | Pipelines |
-| **Artifact Type** | `artifact-raw`, `artifact-processed`, `artifact-model`, `artifact-metric` | Artifacts |
-| **Algorithm** | `algorithm-linear-regression` | Models, Artifacts |
-| **Status** | `status-experimental`, `status-validated`, `status-production` | Models |
-| **Data Quality** | `quality-complete`, `quality-incomplete` | Artifacts (dynamic) |
-| **Performance** | `performance-high-r2`, `performance-low-r2` | Model artifacts (dynamic) |
+1. **Strict Artifact Tagging**: *Every* piece of data, model, and metric is tagged at birth using a centralized `Tag Registry` (using Python Enums to prevent typos!).
+2. **Dynamic Evaluation Tags**: The pipeline automatically evaluates the model and tags the artifacts dynamically (e.g., `[performance-high-r2]` or `[performance-low-r2]`) based on the actual evaluation metrics.
+3. **The Strategy Pattern**: The codebase uses clean OOP design. Data cleaning and model training algorithms can be easily swapped without ever touching the core ZenML `@step` definitions.
+4. **Model Control Plane**: Models aren't just saved as `.pkl` files; they are tracked as first-class entities in the ZenML Model Registry.
 
-```python
-# Tags are defined as Enums for consistency (no typos!)
-from tag_registry import Environment, Domain, ArtifactType
+---
 
-@pipeline(tags=[Environment.DEV.value, Domain.ECOMMERCE.value])
-def train_pipeline():
-    ...
-```
+## 🏗️ How It Works (The Architecture)
 
-## 🛠 Tech Stack
+I've strictly separated the ML business logic (`src/`) from the pipeline orchestration (`steps/`). 
 
-| Component | Technology |
-|-----------|------------|
-| **Orchestration** | ZenML |
-| **ML Framework** | scikit-learn |
-| **Data Processing** | Pandas, NumPy |
-| **Tag Management** | ZenML Tags + Custom Enum Registry |
-| **Model Tracking** | ZenML Model Control Plane |
-| **Language** | Python 3.8+ |
-
-## 📦 Installation
-
-This project uses [uv](https://github.com/astral-sh/uv) for lightning-fast dependency management.
-
-```bash
-# Clone the repository
-git clone https://github.com/abhilashpanda04/Mlops-project-zenml.git
-cd Mlops-project-zenml
-
-# Install dependencies and create a virtual environment with uv
-uv sync
-
-# Activate the virtual environment
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Initialize ZenML
-zenml init
-```
-
-## 🚀 Usage
-
-### Run the Pipeline
-
-```bash
-# Run the training pipeline
-python run_pipeline.py
-```
-
-### View Pipeline in ZenML Dashboard
-
-```bash
-# Launch ZenML dashboard
-zenml up
-
-# List pipeline runs
-zenml pipeline runs list
-```
-
-### Query Tagged Resources
-
-```bash
-# Run the tag manager to find and inspect tagged resources
-python -m utils.tag_manager
-```
-
-This will show:
-- All training pipeline runs
-- Raw and processed artifacts
-- Model artifacts with performance tags
-- Orphaned (untagged) resources
-
-## 🔧 Configuration
-
-Edit `configuration/config.yaml`:
-
-```yaml
-parameters:
-  data_path: "data/olist_customers_dataset.csv"
-  name: "LinearRegression"
-
-tags:
-  - "config-driven"
-  - "dataset-olist"
-```
-
-## 🧱 Design Patterns
-
-### Strategy Pattern
-
-The project uses the **Strategy design pattern** for swappable algorithms:
-
-```
-DataStrategy (ABC)
-├── DataPreProcessingStrategy   → Handles missing values, feature selection
-└── DataDevideStretegy          → Train/test split
-
-Model (ABC)
-└── LinearRegressionModel       → sklearn LinearRegression
-
-Evaluation (ABC)
-├── MSE                         → Mean Squared Error
-├── R2                          → R-squared Score
-└── RMSE                        → Root Mean Squared Error
-```
-
-## 📁 Project Structure
-
-```
+```text
 Mlops-project-zenml/
 ├── pipeline/
-│   └── training_pipeline.py    # Pipeline definition with tags + Model
-├── steps/
-│   ├── ingest_data.py          # Data ingestion with ArtifactConfig
-│   ├── clean_data.py           # Cleaning + dynamic quality tags
-│   ├── train_model.py          # Training with model artifact tags
-│   ├── evaluation.py           # Evaluation + dynamic performance tags
-│   └── config.py               # Pydantic configuration
-├── src/
-│   ├── data_cleaning.py        # Data cleaning strategies
-│   ├── model_development.py    # Model training strategies
-│   └── evaluation.py           # Evaluation metric strategies
+│   └── training_pipeline.py    ← Connects the steps + links to Model Registry
+├── steps/                      
+│   ├── ingest_data.py          ← Loads raw CSV → tags as "artifact-raw"
+│   ├── clean_data.py           ← Preprocesses + dynamic data quality tags
+│   ├── train_model.py          ← Trains model → tags as "artifact-model"
+│   └── evaluation.py           ← Evaluates + dynamic performance tags
+├── src/                        
+│   ├── data_cleaning.py        ← DataStrategy ABC (OOP logic)
+│   ├── model_development.py    ← Model ABC (sklearn Pipeline + Imputers)
+│   └── evaluation.py           ← Evaluation ABC (RMSE, R2, MSE)
 ├── utils/
-│   └── tag_manager.py          # Tag query and orphan detection
+│   └── tag_manager.py          ← Custom CLI to query tagged/orphaned resources
 ├── configuration/
-│   └── config.yaml             # Pipeline parameters
-├── data/
-│   └── olist_customers_dataset.csv
-├── tag_registry.py             # Centralized tag definitions
-├── run_pipeline.py             # Entry point
-├── requirements.txt
-└── README.md
+│   └── config.yaml             
+├── tag_registry.py             ← Central Enum registry for all metadata tags
+└── run_pipeline.py             ← Main entry point
 ```
 
-## 📚 ZenML Features Demonstrated
+### 📈 The Pipeline Flow
 
-- [x] `@pipeline` and `@step` decorators
-- [x] Pipeline tags (`tags=[...]` in decorator)
-- [x] Runtime tags via `.with_options(tags=[...])`
-- [x] YAML config tags
-- [x] `ArtifactConfig` with tags on all artifacts
-- [x] `Annotated` type hints for named outputs
-- [x] Dynamic tagging with `add_tags()`
-- [x] `Model` entity for Model Control Plane
-- [x] Tag Registry with Python Enums
-- [x] Tag filtering (`startswith:`, `contains:`)
-- [x] Orphaned resource detection
-- [x] Strategy design pattern for extensibility
+Here is how data moves through the system, getting tagged at every stage:
 
-## 📈 Pipeline Flow
-
-```
+```text
 Load Data ──→ Clean & Split ──→ Train Model ──→ Evaluate
    │               │                │              │
    ▼               ▼                ▼              ▼
 [artifact-raw]  [artifact-       [artifact-    [artifact-metric]
 [domain-        processed]       model]        + dynamic tags:
 ecommerce]      + dynamic:       [algorithm-   [performance-
-                [quality-*]      linear-       high-r2] or
-                                 regression]   [performance-
-                                               low-r2]
+                [quality-*]      linear-       high-r2]
+                                 regression]   
 ```
 
-## 🤝 Contributing
+---
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## 🛠 Tech Stack
 
-## 📚 Resources
+I rely on a modern, lightweight MLOps stack:
+- **Orchestration**: ZenML
+- **Package Management**: [uv](https://github.com/astral-sh/uv) (lightning fast!)
+- **ML Framework**: Scikit-Learn
+- **Data Processing**: Pandas, NumPy
 
-- [ZenML Documentation](https://docs.zenml.io/)
-- [ZenML Tagging Guide](https://docs.zenml.io/how-to/data-artifact-management/handle-data-artifacts/tagging)
-- [ZenML Model Control Plane](https://docs.zenml.io/how-to/model-management-metrics/model-control-plane)
-- [Organizing Pipelines & Models](https://docs.zenml.io/user-guides/best-practices/organizing-pipelines-and-models)
+---
 
-## 📝 License
+## 🚀 Getting Started
 
-This project is licensed under the MIT License - see LICENSE file for details.
+Want to run this on your own machine? It takes less than 2 minutes.
 
-## 👤 Author
+### 1. Installation
+
+This project uses `uv` for incredibly fast dependency management.
+
+```bash
+# Clone the repository
+git clone https://github.com/abhilashpanda04/Mlops-project-zenml.git
+cd Mlops-project-zenml
+
+# Install dependencies and create a virtual environment instantly
+uv sync
+
+# Activate the virtual environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Initialize ZenML locally
+zenml init
+```
+
+### 2. Run the Pipeline
+
+Execute the full training pipeline:
+
+```bash
+python run_pipeline.py
+```
+
+### 3. See the Magic (Querying Tags)
+
+I built a custom utility to showcase the power of ZenML tagging. Run the tag manager to easily find your best performing models and detect orphaned pipeline runs:
+
+```bash
+python -m utils.tag_manager
+```
+
+### 4. View the Dashboard
+
+To see the visual DAG, your model artifacts, and metrics, start the local ZenML server:
+
+```bash
+zenml up
+```
+
+---
+
+## 🤝 Contributing & Feedback
+
+If you're interested in MLOps, system design, or have feedback on my implementation of the Strategy pattern, I'd love to connect! Feel free to open an issue, submit a PR, or reach out directly.
+
+## 👤 About Me
 
 **Abhilash Kumar Panda**
 - 📧 Email: abhilashk.isme1517@gmail.com
@@ -253,5 +141,4 @@ This project is licensed under the MIT License - see LICENSE file for details.
 - GitHub: [@abhilashpanda04](https://github.com/abhilashpanda04)
 
 ---
-
-⭐ If this project helps you, please consider giving it a star!
+⭐ *If you found this architecture helpful or interesting, please consider giving the repo a star!*
